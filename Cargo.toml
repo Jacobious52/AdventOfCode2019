@@ -1,0 +1,11 @@
+[package]
+name = "advent_of_code_2019"
+version = "0.1.0"
+authors = ["Jacobious52 <jacobgonzalez5252@gmail.com>"]
+edition = "2018"
+
+default-run = "playground"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
