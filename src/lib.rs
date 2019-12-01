@@ -71,11 +71,9 @@ impl<T, U> Problem<T, U> where U: Eq + fmt::Display {
         }
      }
 
-    pub fn skip(&self) -> Problem<T, U> {
-        Problem {
-            test_fn: self.test_fn,
-            skip_tests: true,
-        }
+    pub fn without_tests(mut self) -> Problem<T, U> {
+        self.skip_tests = true;
+        self
     }
 
     pub fn test(&self, test: T, expect: U) -> TestResult<U> {
