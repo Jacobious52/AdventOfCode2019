@@ -15,7 +15,7 @@ fn part1() {
     let input = include_str!("../../inputs/day01part1.txt");
     
     let problem = Problem::<_, i64>::new(|nums: Vec<i64>| {
-        nums.iter().map(|n| fuel(*n)).sum()
+        nums.into_iter().map(fuel).sum()
     });
 
     // tests
@@ -37,17 +37,15 @@ fn part2() {
     let input = include_str!("../../inputs/day01part2.txt");
     
     let problem = Problem::<_, i64>::new(|nums: Vec<i64>| {
-        let totals: Vec<i64> = nums.iter().map(|m| {
+        nums.iter().map(|&m| {
             let mut t = 0;
-            let mut f = fuel(*m);
+            let mut f = fuel(m);
             while f > 0 {
                 t += f;
                 f = fuel(f);
             }
             t
-        }).collect();
-        
-        totals.iter().sum()
+        }).sum()
     });
 
     // tests
