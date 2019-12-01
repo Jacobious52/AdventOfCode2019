@@ -1,6 +1,8 @@
 extern crate advent_of_code_2019;
 
-fn main() {
+use advent_of_code_2019::days::day02;
 
-    println!("hello day02");
+fn main() {
+    day02::part1();
+    day02::part2();
 }
