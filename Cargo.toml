@@ -9,3 +9,4 @@ default-run = "playground"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+colored = "1.9"

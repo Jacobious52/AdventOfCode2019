@@ -1,5 +1,19 @@
 use std::fmt;
 
+use colored::*;
+
+#[macro_export]
+macro_rules! part {
+    ($p:expr) => (
+        println!("{}", 
+            format!("🥇 Part {}", $p)
+                .blue()
+                .bold()
+                .underline()
+        );
+    ); 
+}
+
 #[macro_export]
 macro_rules! run {
     ($($t:expr => $e:expr => $p:ident), *) => (
@@ -8,6 +22,7 @@ macro_rules! run {
         )*
     );
     ($i:expr => $p:ident) => (
+        println!("{}", "🎁 Result".yellow().bold());
         println!("{}", $p.run($i));
     );
 }
@@ -36,9 +51,9 @@ pub enum TestResult<U> where U: Eq + fmt::Display {
 impl<U> fmt::Display for TestResult<U> where U: Eq + fmt::Display {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TestResult::Passed => write!(f, "Passed"),
-            TestResult::Skipped => write!(f, "Skipped"),
-            TestResult::Failed(actual) => write!(f, "Failed with {}", actual),
+            TestResult::Passed => write!(f, "{}", "✅ Passed".green()),
+            TestResult::Skipped => write!(f, "{}", "💤 Skipped".white().dimmed()),
+            TestResult::Failed(actual) => write!(f, "{} {}", "❌ Failed with".red(), actual),
         }
     }
 }
