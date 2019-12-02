@@ -1,5 +1,6 @@
 pub mod problem;
 pub mod util;
+pub mod intcode;
 
 #[macro_export]
 macro_rules! part {
