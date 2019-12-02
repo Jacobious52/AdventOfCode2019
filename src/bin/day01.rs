@@ -1,8 +1,8 @@
 extern crate advent_of_code_2019;
 
-use advent_of_code_2019::days::day01;
+use advent_of_code_2019::days::day01 as today;
 
 fn main() {
-    day01::part1();
-    day01::part2();
+    today::part1();
+    today::part2();
 }
