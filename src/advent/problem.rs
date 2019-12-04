@@ -3,13 +3,19 @@ use std::fmt;
 use colored::*;
 
 #[derive(Debug)]
-pub enum TestResult<U> where U: Eq + fmt::Display {
+pub enum TestResult<U>
+where
+    U: Eq + fmt::Display,
+{
     Passed,
     Failed(U),
     Skipped,
 }
 
-impl<U> fmt::Display for TestResult<U> where U: Eq + fmt::Display {
+impl<U> fmt::Display for TestResult<U>
+where
+    U: Eq + fmt::Display,
+{
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             TestResult::Passed => write!(f, "{}", "✅ Passed".green()),
@@ -19,18 +25,24 @@ impl<U> fmt::Display for TestResult<U> where U: Eq + fmt::Display {
     }
 }
 
-pub struct Problem<T, U> where U: Eq + fmt::Display {
+pub struct Problem<T, U>
+where
+    U: Eq + fmt::Display,
+{
     test_fn: fn(T) -> U,
     skip_tests: bool,
 }
 
-impl<T, U> Problem<T, U> where U: Eq + fmt::Display {
-    pub fn new(test_fn: fn(T) -> U) -> Problem<T, U> { 
+impl<T, U> Problem<T, U>
+where
+    U: Eq + fmt::Display,
+{
+    pub fn new(test_fn: fn(T) -> U) -> Problem<T, U> {
         Problem {
             test_fn,
             skip_tests: false,
         }
-     }
+    }
 
     pub fn without_tests(mut self) -> Problem<T, U> {
         self.skip_tests = true;

@@ -1,8 +1,5 @@
-use super::advent::{
-    problem::Problem,
-    intcode::Interpreter
-};
-use crate::{run, part};
+use super::advent::{intcode::Interpreter, problem::Problem};
+use crate::{part, run};
 
 use colored::*;
 
@@ -11,10 +8,8 @@ use std::str::FromStr;
 pub fn part1() {
     part!(1);
     let input = include_str!("../../inputs/day02.txt");
-    
-    let problem = Problem::<_, usize>::new(|interpreter: Interpreter| {
-        interpreter.eval().first()
-    });
+
+    let problem = Problem::<_, usize>::new(|interpreter: Interpreter| interpreter.eval().first());
 
     // tests
     run!(
@@ -38,7 +33,7 @@ pub fn part1() {
 pub fn part2() {
     part!(2);
     let input = include_str!("../../inputs/day02.txt");
-    
+
     let problem = Problem::<_, usize>::new(|interpreter: Interpreter| {
         for i in 0..100 {
             for j in 0..100 {
@@ -46,7 +41,7 @@ pub fn part2() {
                 interpreter.set(1, i);
                 interpreter.set(2, j);
                 if interpreter.eval().first() == 19_690_720 {
-                    return 100 * i + j
+                    return 100 * i + j;
                 }
             }
         }

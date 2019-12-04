@@ -1,23 +1,18 @@
+pub mod intcode;
 pub mod problem;
 pub mod util;
-pub mod intcode;
 
 #[macro_export]
 macro_rules! part {
-    ($p:expr) => (
-        println!("{}", 
-            format!("🥇 Part {}", $p)
-                .blue()
-                .bold()
-                .underline()
-        );
-    ); 
+    ($p:expr) => {
+        println!("{}", format!("🥇 Part {}", $p).blue().bold().underline());
+    };
 }
 
 #[macro_export]
 macro_rules! run {
     ($($t:expr => $e:expr => $p:ident), *) => (
-        $( 
+        $(
             println!("{}", $p.test($t, $e));
         )*
     );

@@ -1,8 +1,5 @@
-use super::advent::{
-    problem::Problem,
-    util
-};
-use crate::{run, part};
+use super::advent::{problem::Problem, util};
+use crate::{part, run};
 
 use colored::*;
 
@@ -14,9 +11,7 @@ pub fn part1() {
     part!(1);
     let input = include_str!("../../inputs/day01.txt");
 
-    let problem = Problem::<_, i64>::new(|nums: Vec<i64>| {
-        nums.into_iter().map(fuel).sum()
-    });
+    let problem = Problem::<_, i64>::new(|nums: Vec<i64>| nums.into_iter().map(fuel).sum());
 
     // tests
     run!(
@@ -35,17 +30,19 @@ pub fn part1() {
 pub fn part2() {
     part!(2);
     let input = include_str!("../../inputs/day01.txt");
-    
+
     let problem = Problem::<_, i64>::new(|nums: Vec<i64>| {
-        nums.iter().map(|&m| {
-            let mut t = 0;
-            let mut f = fuel(m);
-            while f > 0 {
-                t += f;
-                f = fuel(f);
-            }
-            t
-        }).sum()
+        nums.iter()
+            .map(|&m| {
+                let mut t = 0;
+                let mut f = fuel(m);
+                while f > 0 {
+                    t += f;
+                    f = fuel(f);
+                }
+                t
+            })
+            .sum()
     });
 
     // tests
