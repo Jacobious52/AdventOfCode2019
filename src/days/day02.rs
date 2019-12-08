@@ -1,57 +1,60 @@
-use super::advent::{intcode::Interpreter, problem::Problem};
-use crate::{part, run};
+// // note doesn't work after day05 changes.. not backward compatible
 
-use colored::*;
+// use super::advent::{intcode::Interpreter, problem::Problem};
+// use crate::{part, run};
+// use std::iter;
 
-use std::str::FromStr;
+// use colored::*;
 
-pub fn part1() {
-    part!(1);
-    let input = include_str!("../../inputs/day02.txt");
+// use std::str::FromStr;
 
-    let problem = Problem::<_, usize>::new(|interpreter: Interpreter| interpreter.eval().first());
+// pub fn part1() {
+//     part!(1);
+//     let input = include_str!("../../inputs/day02.txt");
 
-    // tests
-    run!(
-        Interpreter::new(vec![1,9,10,3,2,3,11,0,99,30,40,50]) => 3500 => problem,
-        Interpreter::new(vec![1,0,0,0,99]) => 2 => problem,
-        Interpreter::new(vec![2,3,0,3,99]) => 2 => problem,
-        Interpreter::new(vec![2,4,4,5,99,0]) => 2 => problem,
-        Interpreter::new(vec![1,1,1,4,99,5,6,0,99]) => 30 => problem
-    );
+//     let problem = Problem::<_, isize>::new(|interpreter: Interpreter| interpreter.eval(iter::empty()).first());
 
-    let mut interpreter = Interpreter::from_str(input).expect("failed to load program");
-    interpreter.set(1, 12);
-    interpreter.set(2, 2);
+//     // tests
+//     run!(
+//         Interpreter::new(vec![1,9,10,3,2,3,11,0,99,30,40,50]) => 3500 => problem,
+//         Interpreter::new(vec![1,0,0,0,99]) => 2 => problem,
+//         Interpreter::new(vec![2,3,0,3,99]) => 2 => problem,
+//         Interpreter::new(vec![2,4,4,5,99,0]) => 2 => problem,
+//         Interpreter::new(vec![1,1,1,4,99,5,6,0,99]) => 30 => problem
+//     );
 
-    // answer 6568671
-    run!(
-        interpreter => problem
-    );
-}
+//     let mut interpreter = Interpreter::from_str(input).expect("failed to load program");
+//     interpreter.set(1, 12);
+//     interpreter.set(2, 2);
 
-pub fn part2() {
-    part!(2);
-    let input = include_str!("../../inputs/day02.txt");
+//     // answer 6568671
+//     run!(
+//         interpreter => problem
+//     );
+// }
 
-    let problem = Problem::<_, usize>::new(|interpreter: Interpreter| {
-        for i in 0..100 {
-            for j in 0..100 {
-                let mut interpreter = interpreter.clone();
-                interpreter.set(1, i);
-                interpreter.set(2, j);
-                if interpreter.eval().first() == 19_690_720 {
-                    return 100 * i + j;
-                }
-            }
-        }
-        panic!("no solution found");
-    });
+// pub fn part2() {
+//     part!(2);
+//     let input = include_str!("../../inputs/day02.txt");
 
-    let interpreter = Interpreter::from_str(input).expect("failed to load program");
+//     let problem = Problem::<_, isize>::new(|interpreter: Interpreter| {
+//         for i in 0..100 {
+//             for j in 0..100 {
+//                 let mut interpreter = interpreter.clone();
+//                 interpreter.set(1, i);
+//                 interpreter.set(2, j);
+//                 if interpreter.eval(iter::empty()).first() == 19_690_720 {
+//                     return 100 * i + j;
+//                 }
+//             }
+//         }
+//         panic!("no solution found");
+//     });
 
-    // answer: 39 51 = 3951
-    run!(
-        interpreter => problem
-    );
-}
+//     let interpreter = Interpreter::from_str(input).expect("failed to load program");
+
+//     // answer: 39 51 = 3951
+//     run!(
+//         interpreter => problem
+//     );
+// }

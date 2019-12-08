@@ -7,7 +7,7 @@ Repo for Advent of Code 2019 for fun and learning Rust
 
 `cargo run --bin day01`
 
-`cargo run --bin day02`
+Note: day05 breaks day02
 
 etc
 
