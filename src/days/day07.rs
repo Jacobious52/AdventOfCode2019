@@ -59,10 +59,13 @@ pub fn part2() {
             let mut input = VecDeque::new();
             let mut stopped = false;
             let mut amps = amplifiers.to_vec();
+            let mut give_phases = true;
             while !stopped {
                 for (&&phase, amp) in order.iter().zip(amps.iter_mut()) {
                     let mut out_mem = Vec::new();
-                    input.push_back(phase);
+                    if give_phases {
+                        input.push_back(phase);
+                    }
                     if let Some(output) = output {
                         input.push_back(output);
                     }
@@ -73,6 +76,7 @@ pub fn part2() {
 
                     stopped = amp.did_halt();
                 }
+                give_phases = false;
             }
             final_outputs.push(output);
         }
