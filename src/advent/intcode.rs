@@ -29,6 +29,10 @@ enum Instr {
     Mul(usize, Param, Param, usize),
     In(usize, usize),
     Out(usize, Param),
+    JmpT(usize, Param, Param),
+    JmpF(usize, Param, Param),
+    Lt(usize, Param, Param, usize),
+    Eq(usize, Param, Param, usize),
     Halt,
 }
 
@@ -37,8 +41,12 @@ impl fmt::Display for Instr {
         match self {
             Instr::Add(_, a, b, dest) => write!(f, "${} = {} + {}", dest, a, b),
             Instr::Mul(_, a, b, dest) => write!(f, "${} = {} * {}", dest, a, b),
-            Instr::In(_, dest) => write!(f, "IN => ${}", dest),
-            Instr::Out(_, a) => writeln!(f, "{} -> OUT", a),
+            Instr::In(_, dest) => write!(f, "${} <- IN", dest),
+            Instr::Out(_, a) => writeln!(f, "$OUT <- {}", a),
+            Instr::JmpT(_, a, b) => writeln!(f, "$PC =? {}: {} == 1", b, a),
+            Instr::JmpF(_, a, b) => writeln!(f, "$PC =? {}: {} == 0", b, a),
+            Instr::Lt(_, a, b, dest) => write!(f, "${} =? {} < {}", dest, a, b),
+            Instr::Eq(_, a, b, dest) => write!(f, "${} =? {} == {}", dest, a, b),
             Instr::Halt => writeln!(f, "HALT"),
         }
     }
@@ -62,8 +70,8 @@ impl Interpreter {
         Interpreter { memory, pc: 0 }
     }
 
-    pub fn set(&mut self, idx: isize, val: isize) {
-        self.memory[addr!(idx)] = val;
+    pub fn set(&mut self, idx: usize, val: isize) {
+        self.memory[idx] = val;
     }
 
     fn param(&self, param: Param) -> isize {
@@ -84,9 +92,11 @@ impl Interpreter {
                 println!("{}: {}", self.pc, intr);
             }
 
+            let mut did_jump = false;
+
             match intr {
-                Instr::Add(_, a, b, dest) => self.memory[dest] = self.param(a) + self.param(b),
-                Instr::Mul(_, a, b, dest) => self.memory[dest] = self.param(a) * self.param(b),
+                Instr::Add(_, a, b, dest) => self.set(dest, self.param(a) + self.param(b)),
+                Instr::Mul(_, a, b, dest) => self.set(dest, self.param(a) * self.param(b)),
 
                 Instr::In(_, dest) => {
                     self.memory[dest] = input
@@ -97,9 +107,42 @@ impl Interpreter {
                 }
                 Instr::Out(_, a) => output.push(self.param(a)),
 
+                Instr::JmpT(_, a, b) => {
+                    if self.param(a) != 0 {
+                        self.pc = addr!(self.param(b));
+                        did_jump = true;
+                    }
+                }
+
+                Instr::JmpF(_, a, b) => {
+                    if self.param(a) == 0 {
+                        self.pc = addr!(self.param(b));
+                        did_jump = true;
+                    }
+                }
+
+                Instr::Lt(_, a, b, dest) => {
+                    if self.param(a) < self.param(b) {
+                        self.set(dest, 1);
+                    } else {
+                        self.set(dest, 0);
+                    }
+                }
+
+                Instr::Eq(_, a, b, dest) => {
+                    if self.param(a) == self.param(b) {
+                        self.set(dest, 1);
+                    } else {
+                        self.set(dest, 0);
+                    }
+                }
+
                 Instr::Halt => break,
             };
-            self.advance(intr);
+
+            if !did_jump {
+                self.advance(intr);
+            }
         }
         self
     }
@@ -150,6 +193,20 @@ impl Interpreter {
             ),
             3 => Instr::In(2, addr!(self.memory[self.pc + 1])),
             4 => Instr::Out(2, self.get_param(opcode, 1)),
+            5 => Instr::JmpT(3, self.get_param(opcode, 1), self.get_param(opcode, 2)),
+            6 => Instr::JmpF(3, self.get_param(opcode, 1), self.get_param(opcode, 2)),
+            7 => Instr::Lt(
+                4,
+                self.get_param(opcode, 1),
+                self.get_param(opcode, 2),
+                addr!(self.memory[self.pc + 3]),
+            ),
+            8 => Instr::Eq(
+                4,
+                self.get_param(opcode, 1),
+                self.get_param(opcode, 2),
+                addr!(self.memory[self.pc + 3]),
+            ),
             99 => Instr::Halt,
             _ => panic!("unknown instr: {}", op),
         }
@@ -157,10 +214,14 @@ impl Interpreter {
 
     fn advance(&mut self, intr: Instr) {
         self.pc += match intr {
-            Instr::Add(w, _, _, _) => w,
-            Instr::Mul(w, _, _, _) => w,
-            Instr::In(w, _) => w,
-            Instr::Out(w, _) => w,
+            Instr::Add(w, ..) => w,
+            Instr::Mul(w, ..) => w,
+            Instr::In(w, ..) => w,
+            Instr::Out(w, ..) => w,
+            Instr::JmpT(w, ..) => w,
+            Instr::JmpF(w, ..) => w,
+            Instr::Lt(w, ..) => w,
+            Instr::Eq(w, ..) => w,
             Instr::Halt => 1,
         };
     }
