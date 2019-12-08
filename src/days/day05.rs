@@ -1,7 +1,6 @@
 use super::advent::{intcode::Interpreter, problem::Problem};
 use crate::{part, run};
 
-use std::iter;
 use std::str::FromStr;
 
 use colored::*;
@@ -11,8 +10,7 @@ pub fn part1() {
 
     let problem = Problem::<_, isize>::new(|interpreter: Interpreter| {
         let mut output = Vec::new();
-        let input = iter::once(1);
-        interpreter.eval(input, &mut output, false);
+        interpreter.eval(vec![1], &mut output, false);
         dbg!(&output);
         *output.last().expect("no diagnostic code")
     });

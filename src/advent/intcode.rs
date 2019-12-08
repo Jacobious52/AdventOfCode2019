@@ -1,6 +1,8 @@
 use std::fmt;
 use std::num::ParseIntError;
 use std::str::FromStr;
+use std::iter::FromIterator;
+use std::collections::VecDeque;
 
 #[derive(Debug, Copy, Clone)]
 enum Mode {
@@ -42,12 +44,12 @@ impl fmt::Display for Instr {
             Instr::Add(_, a, b, dest) => write!(f, "${} = {} + {}", dest, a, b),
             Instr::Mul(_, a, b, dest) => write!(f, "${} = {} * {}", dest, a, b),
             Instr::In(_, dest) => write!(f, "${} <- IN", dest),
-            Instr::Out(_, a) => writeln!(f, "$OUT <- {}", a),
-            Instr::JmpT(_, a, b) => writeln!(f, "$PC =? {}: {} == 1", b, a),
-            Instr::JmpF(_, a, b) => writeln!(f, "$PC =? {}: {} == 0", b, a),
+            Instr::Out(_, a) => write!(f, "$OUT <- {}", a),
+            Instr::JmpT(_, a, b) => write!(f, "$PC =? {}: {} == 1", b, a),
+            Instr::JmpF(_, a, b) => write!(f, "$PC =? {}: {} == 0", b, a),
             Instr::Lt(_, a, b, dest) => write!(f, "${} =? {} < {}", dest, a, b),
             Instr::Eq(_, a, b, dest) => write!(f, "${} =? {} == {}", dest, a, b),
-            Instr::Halt => writeln!(f, "HALT"),
+            Instr::Halt => write!(f, "HALT"),
         }
     }
 }
@@ -59,7 +61,7 @@ macro_rules! addr {
     };
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct Interpreter {
     memory: Vec<isize>,
     pc: usize,
@@ -81,10 +83,9 @@ impl Interpreter {
         }
     }
 
-    pub fn eval<I>(mut self, input: I, output: &mut Vec<isize>, debug: bool) -> Interpreter
-    where
-        I: IntoIterator<Item = isize> + Clone,
-    {
+    pub fn eval(mut self, input: Vec<isize>, output: &mut Vec<isize>, debug: bool) -> Interpreter {
+        let mut input_stream = VecDeque::from_iter(input.iter());
+
         while self.pc < self.memory.len() {
             let intr = self.next_instr();
 
@@ -98,13 +99,7 @@ impl Interpreter {
                 Instr::Add(_, a, b, dest) => self.set(dest, self.param(a) + self.param(b)),
                 Instr::Mul(_, a, b, dest) => self.set(dest, self.param(a) * self.param(b)),
 
-                Instr::In(_, dest) => {
-                    self.memory[dest] = input
-                        .clone()
-                        .into_iter()
-                        .next()
-                        .expect("input ran out of values")
-                }
+                Instr::In(_, dest) => self.memory[dest] = *input_stream.pop_front().expect("no input to pop"),
                 Instr::Out(_, a) => output.push(self.param(a)),
 
                 Instr::JmpT(_, a, b) => {
