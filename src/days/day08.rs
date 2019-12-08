@@ -18,7 +18,7 @@ pub fn part1() {
         let mut img = vec![];
         let mut i = 0;
         while i < digits.len() {
-            let mut layer = vec![vec!["".to_owned(); width]; height];
+            let mut layer = vec![vec![0; width]; height];
             let mut counts = vec![0, 0, 0];
             for h in 0..height {
                 for w in 0..width {
@@ -29,7 +29,7 @@ pub fn part1() {
                         _ => {}
                     };
                    
-                    layer[h][w] = digit.to_string();
+                    layer[h][w] = digit;
 
                     i += 1;
                 }
@@ -42,12 +42,14 @@ pub fn part1() {
             img.push(layer);
         }
 
-        let mut pic = vec![vec![".".to_owned(); width]; height];
+        let mut pic = vec![vec![" ".to_owned(); width]; height];
         for layer in img.iter().rev() {
             for h in 0..height {
                 for w in 0..width {
-                    if pic[h][w] == "." || pic[h][w] == "2" {
-                        pic[h][w] = layer[h][w].clone();
+                    if layer[h][w] == 0 {
+                        pic[h][w] = " ".to_owned();
+                    } else if layer[h][w] == 1 {
+                        pic[h][w] = "#".to_owned();
                     }
                 }
             }
