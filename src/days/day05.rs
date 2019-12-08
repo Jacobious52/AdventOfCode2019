@@ -2,6 +2,7 @@ use super::advent::{intcode::Interpreter, problem::Problem};
 use crate::{part, run};
 
 use std::str::FromStr;
+use std::collections::VecDeque;
 
 use colored::*;
 
@@ -10,7 +11,8 @@ pub fn part1() {
 
     let problem = Problem::<_, isize>::new(|interpreter: Interpreter| {
         let mut output = Vec::new();
-        interpreter.eval(vec![1], &mut output, false);
+        let mut input = VecDeque::from(vec![1]);
+        interpreter.eval(&mut input, &mut output, false);
         dbg!(&output);
         *output.last().expect("no diagnostic code")
     });
@@ -31,11 +33,11 @@ pub fn part2() {
     part!(2);
 
     let problem = Problem::<_, isize>::new(|args: (Interpreter, Vec<isize>)| {
-        let input = args.1;
+        let mut input = VecDeque::from(args.1);
         let interpreter = args.0;
         let mut output = Vec::new();
         
-        interpreter.eval(input, &mut output, false);
+        interpreter.eval(&mut input, &mut output, false);
     
         *output.last().expect("no diagnostic code")
     });

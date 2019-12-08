@@ -1,7 +1,6 @@
 use std::fmt;
 use std::num::ParseIntError;
 use std::str::FromStr;
-use std::iter::FromIterator;
 use std::collections::VecDeque;
 
 #[derive(Debug, Copy, Clone)]
@@ -65,11 +64,12 @@ macro_rules! addr {
 pub struct Interpreter {
     memory: Vec<isize>,
     pc: usize,
+    did_halt: bool
 }
 
 impl Interpreter {
     pub fn new(memory: Vec<isize>) -> Interpreter {
-        Interpreter { memory, pc: 0 }
+        Interpreter { memory, pc: 0, did_halt: false }
     }
 
     pub fn set(&mut self, idx: usize, val: isize) {
@@ -83,9 +83,11 @@ impl Interpreter {
         }
     }
 
-    pub fn eval(mut self, input: Vec<isize>, output: &mut Vec<isize>, debug: bool) -> Interpreter {
-        let mut input_stream = VecDeque::from_iter(input.iter());
+    pub fn did_halt(&self) -> bool {
+        self.did_halt
+    }
 
+    pub fn eval(mut self, input: &mut VecDeque<isize>, output: &mut Vec<isize>, debug: bool) -> Interpreter {
         while self.pc < self.memory.len() {
             let intr = self.next_instr();
 
@@ -99,7 +101,14 @@ impl Interpreter {
                 Instr::Add(_, a, b, dest) => self.set(dest, self.param(a) + self.param(b)),
                 Instr::Mul(_, a, b, dest) => self.set(dest, self.param(a) * self.param(b)),
 
-                Instr::In(_, dest) => self.memory[dest] = *input_stream.pop_front().expect("no input to pop"),
+                Instr::In(_, dest) => {
+                    let input_val = input.pop_front();
+                    if input_val.is_none() {
+                        //println!("await IN");
+                        break;
+                    }
+                    self.memory[dest] = input_val.unwrap();
+                },
                 Instr::Out(_, a) => output.push(self.param(a)),
 
                 Instr::JmpT(_, a, b) => {
@@ -132,7 +141,10 @@ impl Interpreter {
                     }
                 }
 
-                Instr::Halt => break,
+                Instr::Halt => {
+                    self.did_halt = true;
+                    break
+                },
             };
 
             if !did_jump {
@@ -231,6 +243,7 @@ impl FromStr for Interpreter {
         Ok(Interpreter {
             memory: memory?,
             pc: 0,
+            did_halt: false,
         })
     }
 }
